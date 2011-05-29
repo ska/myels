@@ -20,7 +20,7 @@ class Finestra:
     def __init__(self):
         self.creaFinestra()
         self.connetti()
-        self.leggiStato()
+        self.primaLetturaStato()
         self.disconnetti()
         self.__f.mainloop()
                         
@@ -106,17 +106,38 @@ class Finestra:
             print "Non connesso 2"
             self.__StatusBar["text"] = "Non connesso"
             
+            
+    def primaLetturaStato(self):
+        try:
+            self.__s.send("*#1*"+ self.__APl +"##")
+            status = self.__s.recv(128)
+            print "status 1:" + status
+            val = status[3:5]
+            if val[1] == "*":
+                val = val[0]            
+            print "test: " + val
+            self.__Slider.set(val)
+        except:
+            print "Non connesso 3"
+            self.__StatusBar["text"] = "Non connesso"          
+    
     def leggiStato(self):
         try:
             self.__s.send("*#1*"+ self.__APl +"##")
-            status = self.__s.recv(9)
-            status = status[3]
-            print "status:" + status
-            if status >= 0:
-                self.__Slider.set(status)
-                self.__active=TRUE
+            status = self.__s.recv(128)
+            #status = status[3]
+            print "status 1:" + status
+            status = self.__s.recv(128)
+            print "status 2:" + status
+            
+            val = status[3:5]
+            if val[1] == "*":
+                val = val[0]            
+            print "test: " + val
+            self.__Slider.set(val)
+                       
         except:
-            print "Non connesso 2"
+            print "Non connesso 4"
             self.__StatusBar["text"] = "Non connesso"               
                               
     def SliderChange(self, x):
