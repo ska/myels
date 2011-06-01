@@ -3,14 +3,13 @@
 import socket
 import time
 from Tkinter import *
-import logging
-
 
 class Finestra:
     __f=''
     __s=''
     __StatusBar=''
-    __ButtonAcition=''
+    __ButtonAccendi=''
+    __ButtonSpegni=''
     __Slider=''
     __APl='21'
     __active=FALSE
@@ -76,6 +75,14 @@ class Finestra:
         self.__ButtonAction.pack({"side":"top", "padx":1, "pady":0})
         self.__ButtonAction['command'] = self.ButtonClickAction
         
+        #self.__ButtonAccendi = Button(self.frameR1C0, text="Accendi" )
+        #self.__ButtonAccendi.pack({"side":"top", "padx":1, "pady":0})
+        #self.__ButtonAccendi['command'] = self.ButtonClickAccendi
+        
+        #self.__ButtonSpegni = Button(self.frameR1C2, text="Spegni")
+        #self.__ButtonSpegni.pack({"side":"top", "padx":2, "pady":20})
+        #self.__ButtonSpegni['command'] = self.ButtonClickSpegni
+        
         self.__ButtonPiu = Button(self.frameR2C2, text="+")
         self.__ButtonPiu.pack({"side":"top", "padx":2, "pady":2})
         self.__ButtonPiu['command'] = self.ButtonClickPiu
@@ -99,7 +106,7 @@ class Finestra:
             else:
                 self.__StatusBar["text"] = "Connesso a " + self.__Ip
         except socket.error, msg:        
-            print "Non connesso connessione"
+            print "Non connesso 1"
             self.__StatusBar["text"] = "Non connesso"
             
             
@@ -110,47 +117,45 @@ class Finestra:
             print "status 1:" + status
             status = status[3:5]
             if status[1] == "*":
-                status = status[0]        
-            status = int(status)        
-            print "Val prima lettura: " + str(status)
+                status = status[0]                
+            print "Val prima lettura: " + status
             self.__active = TRUE
             
-            if status == 0:
+            if status == '0':
                 print "spento"
                 self.__ButtonAction["text"] = "Accendi"
             else:
                 print "Acceso"
                 self.__ButtonAction["text"] = "Spegni"
-            print "esco con val: " + str(status)
+            print "esco con val: " + status
             self.__sliderStatus = status
             
         except:
-            logging.exception("Errore Lettura Primo Stato")
-
+            print "Non connesso 3"
+            self.__StatusBar["text"] = "Non connesso"     
+    
     def leggiStato(self):
         try:
-            print "\n\n"
-            self.__s.send("*#1*"+ self.__APl +"##\0")
-            status =  self.__s.recv(9)
-            print "st1: " + status 
-            self.__s.recv(128)
-            status = status[3:5]
-            if status[1] == '*':
-                status = status[0]
-            self.__sliderStatus = int( status )
-            self.setSlider()
-
+            self.__s.send("*#1*"+ self.__APl +"##")
+            status = self.__s.recv(128)
+            #status = status[3]
+            print "status 1:" + status
+            status = self.__s.recv(128)
+            print "status 2:" + status
+            
+            val = status[3:5]
+            if val[1] == "*" or val[1] == "#":
+                val = val[0] 
+            print "esco con val2: " + val    
+            self.__sliderStatus = val
+            
         except:
-            logging.exception("Errore leggiStato")
+            print "Non connesso 4"
             self.__StatusBar["text"] = "Non connesso"         
              
     def setSlider(self):
-        self.__Slider.set(self.__sliderStatus)
-        if self.__sliderStatus != 0:
-            self.__ButtonAction["text"] = "Spegni"
-        else:
-            self.__ButtonAction["text"] = "Accendi" 
- 
+        #print "SliderStatus: " + self.__sliderStatus
+        self.__Slider.set(self.__sliderStatus)  
     
                      
     def SliderChange(self, x):
@@ -160,31 +165,34 @@ class Finestra:
             self.disconnetti()
             
     def ButtonClickAction(self):
-        try:
-            self.connetti()
-            self.leggiStato()
-            if self.__sliderStatus != 0:
-                print "action spegni: " + str(self.__sliderStatus)
-                cmd = "*1*0*"+ self.__APl +"##"
-                print cmd
-                self.__s.send(cmd)
-                #ack = self.__s.recv(128)
-                #print ack 
-            else:
-                print "action accendi: " + str(self.__sliderStatus)
-                cmd = "*1*1*"+ self.__APl +"##"
-                print cmd
-                self.__s.send(cmd)
-                #ack = self.__s.recv(128)
-                #print ack
-            self.disconnetti()
-        except:
-            logging.exception("Errore leggiStato")    
-
+        self.connetti()
+        self.leggiStato()
+        if self.__sliderStatus != 0:
+            print "action spegni: " + self.__sliderStatus
+            self.__s.send("*1*0*"+ self.__APl +"##")
+        else:
+            print "actioni accendi: " + self.__sliderStatus
+            self.__s.send("*1*1*"+ self.__APl +"##")
+        
+        self.leggiStato()
+        self.disconnetti()
+        
+            
+    def ButtonClickAccendi(self):
+        self.connetti()
+        self.__s.send("*1*1*"+ self.__APl +"##")
+        self.leggiStato()
+        self.disconnetti()
+        
+    def ButtonClickSpegni(self):
+        self.connetti()
+        self.__s.send("*1*0*"+ self.__APl +"##")
+        self.leggiStato()
+        self.disconnetti()
+        
     def ButtonClickPiu(self):
         self.connetti()
         self.__s.send("*1*30*"+ self.__APl +"##")
-        self.__s.recv(6) 
         self.leggiStato()
         self.setSlider()
         self.disconnetti()
@@ -192,7 +200,6 @@ class Finestra:
     def ButtonClickMeno(self):
         self.connetti()
         self.__s.send("*1*31*"+ self.__APl +"##")
-        self.__s.recv(6)
         self.leggiStato()
         self.setSlider()
         self.disconnetti()
@@ -200,6 +207,5 @@ class Finestra:
     def disconnetti(self):
         self.__s.close()
     
-if __name__ == '__main__':  
-    logging.basicConfig()
-    finestra = Finestra()
+if __name__ == '__main__':
+	finestra = Finestra()
