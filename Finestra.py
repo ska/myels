@@ -130,6 +130,7 @@ class Finestra:
     def leggiStato(self):
         try:
             print "\n\n"
+            self.connetti()
             self.__s.send("*#1*"+ self.__APl +"##\0")
             status =  self.__s.recv(9)
             print "st1: " + status 
@@ -139,7 +140,7 @@ class Finestra:
                 status = status[0]
             self.__sliderStatus = int( status )
             self.setSlider()
-
+            self.disconnetti()
         except:
             logging.exception("Errore leggiStato")
             self.__StatusBar["text"] = "Non connesso"         
@@ -155,29 +156,27 @@ class Finestra:
                      
     def SliderChange(self, x):
         if self.__active == TRUE:
+            self.leggiStato()
             self.connetti()
             self.__s.send("*1*"+ x +"*"+ self.__APl +"##")
             self.disconnetti()
+            self.leggiStato()
             
     def ButtonClickAction(self):
-        try:
-            self.connetti()
+        try:           
             self.leggiStato()
+            self.connetti()
             if self.__sliderStatus != 0:
-                print "action spegni: " + str(self.__sliderStatus)
                 cmd = "*1*0*"+ self.__APl +"##"
-                print cmd
+                print "Invio comando spegnimento " + cmd
                 self.__s.send(cmd)
-                #ack = self.__s.recv(128)
-                #print ack 
+        
             else:
-                print "action accendi: " + str(self.__sliderStatus)
                 cmd = "*1*1*"+ self.__APl +"##"
-                print cmd
-                self.__s.send(cmd)
-                #ack = self.__s.recv(128)
-                #print ack
+                print "Invio comando accensione " + cmd
+                self.__s.send(cmd)       
             self.disconnetti()
+            self.leggiStato()
         except:
             logging.exception("Errore leggiStato")    
 
