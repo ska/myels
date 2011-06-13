@@ -93,13 +93,12 @@ class Finestra:
             self.__s=socket.socket( socket.AF_INET, socket.SOCK_STREAM)
             self.__s.connect((self.__Ip, self.__Porta))
             ack = self.__s.recv(6)
-            if(ack != "*#*1##"):
-                print "Non connesso 0"
+            if(ack != "*#*1##"):                
                 self.__StatusBar["text"] = "Non connesso"
             else:
                 self.__StatusBar["text"] = "Connesso a " + self.__Ip
         except socket.error, msg:        
-            print "Non connesso connessione"
+            logging.exception("Non connesso connessione")
             self.__StatusBar["text"] = "Non connesso"
             
             
@@ -107,21 +106,16 @@ class Finestra:
         try:
             self.__s.send("*#1*"+ self.__APl +"##")
             status = self.__s.recv(128)
-            print "status 1:" + status
             status = status[3:5]
             if status[1] == "*":
                 status = status[0]        
             status = int(status)        
-            print "Val prima lettura: " + str(status)
             self.__active = TRUE
             
             if status == 0:
-                print "spento"
                 self.__ButtonAction["text"] = "Accendi"
             else:
-                print "Acceso"
                 self.__ButtonAction["text"] = "Spegni"
-            print "esco con val: " + str(status)
             self.__sliderStatus = status
             
         except:
@@ -129,11 +123,9 @@ class Finestra:
 
     def leggiStato(self):
         try:
-            print "\n\n"
             self.connetti()
             self.__s.send("*#1*"+ self.__APl +"##\0")
             status =  self.__s.recv(9)
-            print "st1: " + status 
             self.__s.recv(128)
             status = status[3:5]
             if status[1] == '*':
@@ -142,8 +134,7 @@ class Finestra:
             self.setSlider()
             self.disconnetti()
         except:
-            logging.exception("Errore leggiStato")
-            self.__StatusBar["text"] = "Non connesso"         
+            logging.exception("Errore leggiStato")     
              
     def setSlider(self):
         self.__Slider.set(self.__sliderStatus)
@@ -168,12 +159,10 @@ class Finestra:
             self.connetti()
             if self.__sliderStatus != 0:
                 cmd = "*1*0*"+ self.__APl +"##"
-                print "Invio comando spegnimento " + cmd
                 self.__s.send(cmd)
         
             else:
                 cmd = "*1*1*"+ self.__APl +"##"
-                print "Invio comando accensione " + cmd
                 self.__s.send(cmd)       
             self.disconnetti()
             self.leggiStato()
