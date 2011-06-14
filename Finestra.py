@@ -6,27 +6,28 @@ from Tkinter import *
 import logging
 
 
-class Finestra:
-    __f=''
-    __s=''
-    __StatusBar=''
-    __ButtonAcition=''
-    __Slider=''
-    __APl='21'
-    __active=FALSE
-    __Ip='192.168.1.35'
-    __Porta=20000
-    __version= '0.2b'
-    __sliderStatus= 0
-    
+class Finestra: 
     def __init__(self):
+        
+        self.__f=''
+        self.__s=''
+        self.__StatusBar=''
+        self.__ButtonAcition=''
+        self.__Slider=''
+        self.__APl='21'
+        self.__active=FALSE
+        self.__Ip='192.168.1.35'
+        self.__Porta=20000
+        self.__version= '0.2b'
+        self.__sliderStatus= 0
+       
         self.creaFinestra()
         self.connetti()
         self.primaLetturaStato()
         self.setSlider()
         self.disconnetti()
         self.__f.mainloop()
-                        
+               
     def creaFinestra(self):
         self.__f = Tk()
         self.__f.title("MyEls " + self.__version)
@@ -123,16 +124,14 @@ class Finestra:
 
     def leggiStato(self):
         try:
-            self.connetti()
             self.__s.send("*#1*"+ self.__APl +"##\0")
-            status =  self.__s.recv(9)
+            status =  self.__s.recv(11)
             self.__s.recv(128)
-            status = status[3:5]
+            status = status[3:5i]
             if status[1] == '*':
                 status = status[0]
             self.__sliderStatus = int( status )
             self.setSlider()
-            self.disconnetti()
         except:
             logging.exception("Errore leggiStato")     
              
@@ -141,13 +140,10 @@ class Finestra:
         if self.__sliderStatus != 0:
             self.__ButtonAction["text"] = "Spegni"
         else:
-            self.__ButtonAction["text"] = "Accendi" 
- 
-    
+            self.__ButtonAction["text"] = "Accendi"     
                      
     def SliderChange(self, x):
         if self.__active == TRUE:
-            self.leggiStato()
             self.connetti()
             self.__s.send("*1*"+ x +"*"+ self.__APl +"##")
             self.disconnetti()
@@ -155,8 +151,8 @@ class Finestra:
             
     def ButtonClickAction(self):
         try:           
-            self.leggiStato()
             self.connetti()
+            self.leggiStato()
             if self.__sliderStatus != 0:
                 cmd = "*1*0*"+ self.__APl +"##"
                 self.__s.send(cmd)
@@ -164,10 +160,11 @@ class Finestra:
             else:
                 cmd = "*1*1*"+ self.__APl +"##"
                 self.__s.send(cmd)       
-            self.disconnetti()
             self.leggiStato()
         except:
             logging.exception("Errore leggiStato")    
+        finally:
+            self.disconnetti()
 
     def ButtonClickPiu(self):
         self.connetti()
@@ -191,3 +188,4 @@ class Finestra:
 if __name__ == '__main__':  
     logging.basicConfig()
     finestra = Finestra()
+
