@@ -9,7 +9,7 @@ class Illuminator:
     def __init__(self):
         logging.basicConfig()
         self.config = Config()
-        self.rete = Rete()
+        self.rete = Rete(self)
         self.finestra = Window(self)
         
     def run(self):
