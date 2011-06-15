@@ -50,17 +50,17 @@ class Window():
         
         self.__ButtonAction = Button(self.frameR1C0, text="Accendi" )
         self.__ButtonAction.pack({"side":"top", "padx":1, "pady":0})
-        self.__ButtonAction['command'] = self.ButtonClickAction
+        #self.__ButtonAction['command'] = self.ButtonClickAction
         
         self.__ButtonPiu = Button(self.frameR2C2, text="+")
         self.__ButtonPiu.pack({"side":"top", "padx":2, "pady":2})
-        self.__ButtonPiu['command'] = self.ButtonClickPiu
+        #self.__ButtonPiu['command'] = self.ButtonClickPiu
         
         self.__ButtonMeno = Button(self.frameR2C0, text="-")
         self.__ButtonMeno.pack({"side":"top", "padx":2, "pady":2})
-        self.__ButtonMeno['command'] = self.ButtonClickMeno
+        #self.__ButtonMeno['command'] = self.ButtonClickMeno
         
-        self.__Slider = Scale(self.frameR2C1, from_=0, to=10, resolution=1, label='Dimmer', command = self.SliderChange, orient=HORIZONTAL)
-        self.__active=FALSE
-        self.__Slider.pack()
+        #self.__Slider = Scale(self.frameR2C1, from_=0, to=10, resolution=1, label='Dimmer', command = self.SliderChange, orient=HORIZONTAL)
+        #self.__active=FALSE
+        #self.__Slider.pack()
 
