@@ -1,6 +1,9 @@
 #!/usr/bin/python
 
 import logging
+from config import *
+from rete import *
+from window import *
 
 class Illuminator:
     def __init__(self):
