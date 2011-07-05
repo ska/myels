@@ -35,21 +35,25 @@ class Window():
         self.__ButtonAction = Button(self.frameR2C2, text="+" )
         self.__ButtonAction.pack()
         self.__ButtonAction['command'] = self.ButtonClickPiu
-
+        
+        self.__Slider = Scale(self.frameR2C1, from_=0, to=10, resolution=1, label='Dimmer', command = self.SliderChange, orient=HORIZONTAL)
+        self.__active=FALSE
+        self.__Slider.pack()
 
 
         self.__StatusBar = Label(self.frameR3, text="Connessione in corso..")
         self.__StatusBar.pack()    
 
 
-# Metodi Ascoltatori Pulsanti    
+# Metodi Ascoltatori Pulsanti e slider   
     def ButtonClickAction(self):
         print "Luca gay azione"
     def ButtonClickMeno(self):
         print "Luca gay meno"
     def ButtonClickPiu(self):
         print "Luca gay piu"
-
+    def SliderChange(self, sliderValue):
+        print "Valore slider" + sliderValue
 
     def run(self):
         self.__f.mainloop()

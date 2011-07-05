@@ -11,11 +11,15 @@ class Illuminator:
         self.config = Config()
         self.rete = Rete(self)
         self.finestra = Window(self)
-        
+    
+
+
     def run(self):
         self.finestra.run()
 
 if __name__ == '__main__':
-    io = Illuminator()
-    io.run()
+    ill = Illuminator()
+    net = Rete(ill)
 
+    ill.run()
+    
