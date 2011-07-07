@@ -19,20 +19,44 @@ import sys
 
 ## cx_Freeze
 import sys
-from cx_Freeze import setup, Executable
+#from cx_Freeze import setup, Executable
+#
+#base = None
+#if sys.platform == "win32":
+#        base = "Win32GUI"
+#
+#setup(name='Illuminator',
+#      version='0.1',
+#      description='desc',
+#      executables=[Executable(script = 'illuminator.py',
+#                              base = base,
+#                              icon = None,
+#                              compress = True,
+#                              copyDependentFiles = True,
+#                              appendScriptToLibrary = True)]
+#      )
 
-base = None
-if sys.platform == "win32":
-        base = "Win32GUI"
+
+## distutils
+import bbfreeze
+#from distutils.core import setup
+from setuptools import setup, find_packages
+
+from distutils import log
+log.set_verbosity(20)
 
 setup(name='Illuminator',
-      version='0.1',
-      description='desc',
-      executables=[Executable(script = 'illuminator.py',
-                              base = base,
-                              icon = None,
-                              compress = True,
-                              copyDependentFiles = True,
-                              appendScriptToLibrary = True)]
+      version='1.0',
+      description='Ilululumin',
+      author='BrikSkag',
+      author_email='poseidone',
+      url='http://',
+      #packages=['illuminator'],
+      packages = find_packages(),
+      verbose=20,
+      #scripts=['illuminator.py']
+      entry_points = {'gui_scripts':'illuminator = illuminator:main'},
+      package_data={'':['*.ico']}
       )
+
 
