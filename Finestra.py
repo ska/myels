@@ -124,7 +124,7 @@ class Finestra:
 
     def leggiStato(self):
         try:
-            self.__s.send("*#1*"+ self.__APl +"##\0")
+            self.__s.send("*#1*"+ self.__APl +"##")
             status =  self.__s.recv(11)
             self.__s.recv(128)
             status = status[3:5]
