@@ -17,9 +17,16 @@ class Illuminator:
     def run(self):
         self.finestra.run()
 
-if __name__ == '__main__':
-    ill = Illuminator()
-    net = Rete(ill)
+def main():
+    if sys.platform == 'win32':
+        # entra nella directory temporanea di lavoro
+        import os
+        tmpdir = os.environ.get('_MEIPASS2', None)
+        if tmpdir:
+            os.chdir(tmpdir)
+    io = Illuminator()
+    io.run()
 
-    ill.run()
-    
+if __name__ == '__main__':
+    main()
+
