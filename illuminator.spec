@@ -5,7 +5,7 @@ a = Analysis([os.path.join(HOMEPATH,'support\\_mountzlib.py'), os.path.join(HOME
 pyz = PYZ(a.pure)
 
 # aggiungere i file dati
-a.datas += [('icon.ico', 'icon.ico', 'DATA')]
+a.datas += [('icon.xbm', 'icon.xbm', 'DATA')]
 
 exe = EXE(TkPKG(), pyz,
           a.scripts,

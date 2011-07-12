@@ -8,7 +8,7 @@ class Window():
         self.__f.title("MyEls " + self.io.config.version)
         self.__f.resizable(FALSE, FALSE)
         self.__f.geometry("%dx%d+%d+%d" % (300, 150,0,0)) 
-        #self.__f.wm_iconbitmap("icon.ico") 
+        self.__f.wm_iconbitmap(bitmap="@icon.xbm") 
         
         self.frameR0 = Frame(self.__f, width="300", height="25", bd=2, relief= GROOVE) 
         self.frameR1 = Frame(self.__f,bg="red",    width="300", height="50") 
