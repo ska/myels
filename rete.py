@@ -16,47 +16,57 @@ class Rete:
         self.log = logging.getLogger('rete')
         self._s = None
 
+    def single_conn(f):
+        """ Ogni azione va fatta su una connessione separata """
+        def wrapped_f(self, *args, **kwargs):
+            try:
+                self._connetti()
+                try:
+                    f(self, *args, **kwargs)
+                except:
+                    self.log.exception('In %s' %f.func_name)
+            except:
+                self.log.exception('Nella connessione')
+            finally:
+                self._disconnetti()
+        return wrapped_f
+
     """
     metodi di interfacciamento con l'interfaccia grafica
     """
 
+    @single_conn
     def leggi_stato(self):
-        self._connetti()
         cmd = CMD_GETSTATUS % self.io.config.APl
         self._invia(cmd)
         data = self._ricevi()
         data = data.split('*')
         # ['', '1', '0', '21##']
-        self._disconnetti()
         return int(data[2])
 
+    @single_conn
     def aumenta_luce(self):
-        self._connetti()
         cmd = CMD_MORE % self.io.config.APl
         self._invia(cmd)
         self._leggi_ack()
-        self._disconnetti()
 
+    @single_conn
     def riduci_luce(self):
-        self._connetti()
         cmd = CMD_LESS % self.io.config.APl
         self._invia(cmd)
         self._leggi_ack()
-        self._disconnetti()
 
+    @single_conn
     def accendi(self):
-        self._connetti()
         cmd = CMD_ON % self.io.config.APl
         self._invia(cmd)
         self._leggi_ack()
-        self._disconnetti()
 
+    @single_conn
     def spegni(self):
-        self._connetti()
         cmd = CMD_OFF % self.io.config.APl
         self._invia(cmd)
         self._leggi_ack()
-        self._disconnetti()
 
     """
     """
@@ -67,7 +77,8 @@ class Rete:
         self._leggi_ack()
 
     def _disconnetti(self):
-        self._s.close()
+        if self._s:
+            self._s.close()
         self._s = None
 
     def _leggi_ack(self):
