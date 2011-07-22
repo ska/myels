@@ -71,6 +71,30 @@ class Rete:
     """
     """
 
+    def _recv_cmd(self):
+        buf, param = '', False
+        while True:
+            try:
+                c = self._s.recv(1)
+            except socket.error:
+                self.log.exception('')
+                self._disconnetti()
+                raise
+            else:
+                buf += c
+                if c == '#':
+                    if param:
+                        # doppio "#"
+                        break
+                    else:
+                        # singolo "#", potrebbe esserci un parametro
+                        param = True
+                else:
+                    # resetto contatore "#"
+                    param = False
+        self.log.debug('ricevuto %s' %buf)
+        return buf
+
     def _connetti(self):
         self._s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self._s.connect((self.io.config.Ip, self.io.config.Porta))
@@ -82,7 +106,8 @@ class Rete:
         self._s = None
 
     def _leggi_ack(self):
-        ack = self._ricevi(len(CMD_ACK))
+        #ack = self._ricevi(len(CMD_ACK))
+        ack = self._recv_cmd()
         if ack != CMD_ACK:
             # raise AckError?
             self.log.error('Ack errato: %s' %ack)

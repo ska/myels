@@ -27,7 +27,7 @@ class Window():
         self.__StatusBar.pack()    
 
     def aggiornaStato(self):
-        #st = self.io.rete.leggi_stato()
+        st = self.io.rete.leggi_stato()
         if not self._luceAccesa:
         #if st > 0:
             self.__ButtonAction['text'] = 'Spegni'
@@ -39,11 +39,9 @@ class Window():
 # Metodi Ascoltatori Pulsanti e slider   
     def ButtonClickAction(self):
         if self._luceAccesa:
-            #self.io.rete.spegni()
-            pass
+            self.io.rete.spegni()
         else:
-            pass
-            #self.io.rete.accendi()
+            self.io.rete.accendi()
         self.aggiornaStato()
         print "Luca gay azione"
 

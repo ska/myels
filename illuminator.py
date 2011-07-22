@@ -7,12 +7,9 @@ from window import *
 
 class Illuminator:
     def __init__(self):
-        logging.basicConfig()
         self.config = Config()
         self.rete = Rete(self)
         self.finestra = Window(self)
-    
-
 
     def run(self):
         self.finestra.run()
@@ -28,5 +25,6 @@ def main():
     io.run()
 
 if __name__ == '__main__':
+    logging.basicConfig(level=logging.DEBUG)
     main()
 
