@@ -4,6 +4,7 @@ from Tkinter import *
 class Window():
     def __init__(self, io):
         self.io = io
+        self._luceAccesa = False
         self.__f = Tk()
         self.__f.title("MyEls " + self.io.config.version)
         self.__f.resizable(FALSE, FALSE)
@@ -25,10 +26,27 @@ class Window():
         self.__StatusBar = Label(self.frameR2, text="Connessione in corso..")
         self.__StatusBar.pack()    
 
+    def aggiornaStato(self):
+        #st = self.io.rete.leggi_stato()
+        if not self._luceAccesa:
+        #if st > 0:
+            self.__ButtonAction['text'] = 'Spegni'
+            self._luceAccesa = True
+        else:
+            self.__ButtonAction['text'] = 'Accendi'
+            self._luceAccesa = False
 
 # Metodi Ascoltatori Pulsanti e slider   
     def ButtonClickAction(self):
+        if self._luceAccesa:
+            #self.io.rete.spegni()
+            pass
+        else:
+            pass
+            #self.io.rete.accendi()
+        self.aggiornaStato()
         print "Luca gay azione"
 
     def run(self):
+        self.aggiornaStato()
         self.__f.mainloop()
