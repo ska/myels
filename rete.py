@@ -181,7 +181,7 @@ class Rete:
         #data = data.split('*')
         # ['', '1', '0', '21##']
         #return int(data[2])
-        msg = self._recv_msg()
+        msg = self._recv_msg('std')
         return 0
 
     @single_conn
@@ -211,7 +211,7 @@ class Rete:
     """
     """
 
-    def _recv_msg(self):
+    def _recv_msg_raw(self):
         buf, param = '', False
         while True:
             try:
@@ -233,7 +233,15 @@ class Rete:
                     # resetto contatore "#"
                     param = False
         log.debug('ricevuto %s' %buf)
+        return buf
+
+    def _recv_msg(self, typ=None):
+        buf = self._recv_msg_raw()
         msg = OpenMSG(buf)
+        if typ:
+            giusto = getattr(msg, 'is_%s' %(typ,))
+            if not giusto:
+                log.error('Atteso %s, ricevuto %s' %(typ, msg))
         return msg
 
     def _connetti(self):
