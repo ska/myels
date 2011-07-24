@@ -106,6 +106,27 @@ class OpenMSG(object):
         self.where = str(where)
         return self
 
+    @staticmethod
+    def build_standard(who, what, where):
+        self = OpenMSG()
+        self.is_std = True
+        self.who = str(who)
+        self.what = str(what)
+        self.where = str(where)
+        return self
+
+    @staticmethod
+    def build_ack():
+        self = OpenMSG()
+        self.is_ack = True
+        return self
+
+    @staticmethod
+    def build_nack():
+        self = OpenMSG()
+        self.is_nack = True
+        return self
+
     def dump(self):
         if self.is_ack:
             return '*#*1##'
