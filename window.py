@@ -28,8 +28,8 @@ class Window():
 
     def aggiornaStato(self):
         st = self.io.rete.leggi_stato()
-        if not self._luceAccesa:
-        #if st > 0:
+        #if not self._luceAccesa:
+        if st > 0:
             self.__ButtonAction['text'] = 'Spegni'
             self._luceAccesa = True
         else:

@@ -159,7 +159,7 @@ class Rete:
             try:
                 self._connetti()
                 try:
-                    f(self, *args, **kwargs)
+                    return f(self, *args, **kwargs)
                 except:
                     log.exception('In %s' %f.func_name)
             except:
@@ -182,7 +182,7 @@ class Rete:
         # ['', '1', '0', '21##']
         #return int(data[2])
         msg = self._recv_msg('std')
-        return 0
+        return int(msg.what)
 
     @single_conn
     def aumenta_luce(self):
