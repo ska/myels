@@ -5,6 +5,7 @@ class Window():
     def __init__(self, io):
         self.io = io
         self._luceAccesa = False
+        self._configured = False
         self.__f = Tk()
         self.__f.title("MyEls " + self.io.config.version)
         self.__f.resizable(FALSE, FALSE)
@@ -51,9 +52,30 @@ class Window():
         self.AboutWindow.grab_set()  # questo rende la finestra "modale"
 
     def CloseAboutWindowButton_Click(self):
-        self.AboutWindow.destroy()        
-         
-                                                                                         
+        self.AboutWindow.destroy() 
+
+    def leggiConfig(self):
+        self.ConfigWindow = w = Toplevel(self.__f, height=100, width=1000)
+
+        okb = Button(w, text='Ok', command=self.configDestroy)
+        okb.pack()
+
+        w.protocol("WM_DELETE_WINDOW", self.configDestroy)
+        w.title('Configurazione')
+        w.grab_set()
+        w.lift()
+
+    def configDestroy(self):
+        d = {}
+        # TODO
+        # recupera i dati della configurazione inseriti
+        # se sono validi scrive la configurazione e distrugge il widget,
+        # altrimenti rimane impalato finche i dati sono giusti
+        self.io.config.write_config(d)
+        self.io.config.read_config()
+        self.ConfigWindow.destroy()
+        self.aggiornaStato()
+
     def aggiornaStato(self):
         st = self.io.rete.leggi_stato()
         #if not self._luceAccesa:
@@ -73,7 +95,16 @@ class Window():
         self.aggiornaStato()
         print "Luca gay azione"
 
+    def windowReady(self, event):
+        # solo la prima volta che la finestra viene configurata
+        # controllo che abbia una configurazione valida
+        if not self._configured:
+            if self.io.config.check_config():
+                self.aggiornaStato()
+            self._configured = True
+
     def run(self):
-        self.aggiornaStato()
+        self.__f.bind('<Configure>', self.windowReady)
+        #self.__f.protocol("WM_TAKE_FOCUS", self.windowReady)
         self.__f.mainloop()
-        
+

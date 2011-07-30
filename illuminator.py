@@ -7,7 +7,7 @@ from window import *
 
 class Illuminator:
     def __init__(self):
-        self.config = Config()
+        self.config = Config(self)
         self.rete = Rete(self)
         self.finestra = Window(self)
 
