@@ -65,11 +65,45 @@ class Window():
         self.__AboutWindow.destroy()
 
     def leggiConfig(self):
-        self.ConfigWindow = w = Toplevel(self.__f, height=100, width=1000)
-
-        okb = Button(w, text='Ok', command=self.configDestroy)
+        self.ConfigWindow = w = Toplevel(self.__f)
+        
+        self.__wR0C0 = Frame(w, width="200", height="50")   
+        self.__wR0C1 = Frame(w, width="200", height="50")
+        self.__wR1C0 = Frame(w, width="200", height="50")   
+        self.__wR1C1 = Frame(w, width="200", height="50")
+        self.__wR2C0 = Frame(w, width="200", height="50")   
+        self.__wR2C1 = Frame(w, width="200", height="50")
+        self.__wR3C0 = Frame(w, width="200", height="50")   
+        self.__wR3C1 = Frame(w, width="200", height="50")
+        
+        self.__wR0C0.grid(row=0, column=0)
+        self.__wR0C1.grid(row=0, column=1)
+        self.__wR1C0.grid(row=1, column=0)
+        self.__wR1C1.grid(row=1, column=1)
+        self.__wR2C0.grid(row=2, column=0)
+        self.__wR2C1.grid(row=2, column=1)
+        self.__wR3C0.grid(row=3, column=0)
+        self.__wR3C1.grid(row=3, column=1)
+        
+        
+        ip_Label = Label (self.__wR0C0, text='Indirizzo Ip')
+        ip_Label.pack(side= LEFT)
+        ip_Text = Entry(self.__wR0C1, width=10)
+        ip_Text.pack()
+        
+        porta_Label = Label (self.__wR1C0, text='Porta')
+        porta_Label.pack(side= LEFT)
+        porta_Text = Entry(self.__wR1C1, width=10)
+        porta_Text.pack()
+        
+        luce_Label = Label (self.__wR2C0, text='Indirizzo SCS')
+        luce_Label.pack(side= LEFT)
+        luce_Text = Entry(self.__wR2C1, width=10)
+        luce_Text.pack()
+        
+        okb = Button(self.__wR3C1, text='Ok', command=self.configDestroy)
         okb.pack()
-
+        
         w.protocol("WM_DELETE_WINDOW", self.configDestroy)
         w.title('Configurazione')
         w.grab_set()
