@@ -12,7 +12,7 @@ class Config:
               }
     def __init__(self, io):
         self.io = io
-        self.version= '0.1b'
+        self.version= '0.99b'
         self.__configured = False
 
         # il file di configurazione va settato nascosto,
