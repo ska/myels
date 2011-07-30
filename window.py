@@ -1,4 +1,3 @@
-
 from Tkinter import *
 
 class Window():
@@ -9,22 +8,12 @@ class Window():
         self.__f.title("MyEls " + self.io.config.version)
         self.__f.resizable(FALSE, FALSE)
         self.__f.geometry("%dx%d+%d+%d" % (300, 110,0,0)) 
+        #self.__f.wm_iconbitmap(bitmap="@icon2.bmp") 
         self.__f.wm_iconbitmap(bitmap="@icon.xbm") 
-        
-        #self.frameR0 = Frame(self.__f, width="300", height="35", bd=2, relief= GROOVE) 
-        self.frameR1 = Frame(self.__f, width="300", height="50") 
-        self.frameR2 = Frame(self.__f, width="300", height="25", bd=2, relief=GROOVE)
          
-        #self.frameR0.grid(row=0, column=0) 
-        self.frameR1.grid(row=1, column=0)
-        self.frameR2.grid(row=2, column=0)
-        # creata tutta la griglia di frame ora la riempio
-        self.__ButtonAction = Button(self.frameR1, text="Azione" )
+        self.__ButtonAction = Button(self.__f, text="Azione", width="100", height="100" )
         self.__ButtonAction.pack()
-        self.__ButtonAction['command'] = self.ButtonClickAction
-
-        self.__StatusBar = Label(self.frameR2, text="Connessione in corso..")
-        self.__StatusBar.pack()    
+        self.__ButtonAction['command'] = self.ButtonClickAction          
         
         # Barra dei menu
         self.__menuBar = Menu(self.__f)
@@ -32,18 +21,19 @@ class Window():
         self.__fileMenu = Menu(self.__menuBar, tearoff=0)
         self.__menuBar.add_cascade(label="File", menu=self.__fileMenu)
         self.__fileMenu.add_command(label="Esci", command=self.__f.quit)
+        
         # Barra dei menu help
         self.__helpMenu = Menu(self.__menuBar, tearoff=0)
         self.__menuBar.add_cascade(label="Aiuto", menu=self.__helpMenu)
         self.__helpMenu.add_command(label="Informazioni", command=self.HelpAbout)
           
         self.__f.config(menu=self.__menuBar)
-        
-        
+               
     ## Finestra di info        
     def HelpAbout(self):
-        self.__AboutWindow = Toplevel(self.__f, height=175, width=450)
-        self.__AboutWindow.title('Informazioni')
+        self.__AboutWindow = Toplevel(self.__f, height="175", width="450")
+        self.__AboutWindow.title('Informazioni')        
+        self.__AboutWindow.wm_iconbitmap(bitmap="@icon.xbm") 
         
         self.__fR0 = Frame(self.__AboutWindow, width="450", height="125")   
         self.__fR1 = Frame(self.__AboutWindow, width="450", height="20")
@@ -59,7 +49,7 @@ class Window():
         
         self.__title = Label(self.__fR1, font=("Helvetica", 16), text='Illuminator ' + self.io.config.version)
         self.__title.pack()
-        self.__descr = Label(self.__fR1, font=("Helvetica", 10), text='Programma per il comando di un punto luce su sistema domotico MYHOME BTICINO')
+        self.__descr = Label(self.__fR1, font=("Helvetica", 10), text='Programma per il comando di un punto luce \n su sistema domotico MYHOME BTICINO \n\n')
         self.__descr.pack()
         self.__autore1 = Label(self.__fR1, font=("Helvetica", 10), text='Luca Dariz <luca.dariz@gmail.com>')
         self.__autore1.pack()
@@ -72,8 +62,7 @@ class Window():
 
     def CloseAboutWindowButton_Click(self):
         self.__AboutWindow.destroy()        
-         
-                                                                                         
+                                                                                                  
     def aggiornaStato(self):
         st = self.io.rete.leggi_stato()
         #if not self._luceAccesa:
