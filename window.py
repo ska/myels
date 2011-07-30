@@ -42,16 +42,36 @@ class Window():
         
     ## Finestra di info        
     def HelpAbout(self):
-        self.AboutWindow = Toplevel(self.__f, height=300, width=300)
-        self.AboutWindow.title('Informazioni')
-        self.AuthorLabel = Label(self.AboutWindow, text='Author: xxxx')
-        #self.AuthorLabel.pack()
-        self.CloseAboutWindowButton = Button(self.AboutWindow, text='Chiudi', command=self.CloseAboutWindowButton_Click)
-        self.CloseAboutWindowButton.pack()
-        self.AboutWindow.grab_set()  # questo rende la finestra "modale"
+        self.__AboutWindow = Toplevel(self.__f, height=175, width=450)
+        self.__AboutWindow.title('Informazioni')
+        
+        self.__fR0 = Frame(self.__AboutWindow, width="450", height="125")   
+        self.__fR1 = Frame(self.__AboutWindow, width="450", height="20")
+        self.__fR2 = Frame(self.__AboutWindow, width="450", height="30")
+        self.__fR0.grid(row=0, column=0)
+        self.__fR1.grid(row=1, column=0)
+        self.__fR2.grid(row=2, column=0)
+        
+        self.__photo = PhotoImage(file="logo.gif", width=150, height=125)
+        self.__logo = Label(self.__fR0, image=self.__photo)
+        self.__logo.photo = self.__photo
+        self.__logo.pack()
+        
+        self.__title = Label(self.__fR1, font=("Helvetica", 16), text='Illuminator ' + self.io.config.version)
+        self.__title.pack()
+        self.__descr = Label(self.__fR1, font=("Helvetica", 10), text='Programma per il comando di un punto luce su sistema domotico MYHOME BTICINO')
+        self.__descr.pack()
+        self.__autore1 = Label(self.__fR1, font=("Helvetica", 10), text='Luca Dariz <luca.dariz@gmail.com>')
+        self.__autore1.pack()
+        self.__autore2 = Label(self.__fR1, font=("Helvetica", 10), text='Luigi Scagnet <luigi.scagnet@gmail.com>')
+        self.__autore2.pack()
+        
+        self.__CloseAboutWindowButton = Button(self.__fR2, text='Chiudi', command=self.CloseAboutWindowButton_Click)
+        self.__CloseAboutWindowButton.pack()
+        #self.__AboutWindow.grab_set()  # questo rende la finestra "modale"
 
     def CloseAboutWindowButton_Click(self):
-        self.AboutWindow.destroy()        
+        self.__AboutWindow.destroy()        
          
                                                                                          
     def aggiornaStato(self):
@@ -71,7 +91,6 @@ class Window():
         else:
             self.io.rete.accendi()
         self.aggiornaStato()
-        print "Luca gay azione"
 
     def run(self):
         self.aggiornaStato()
