@@ -14,6 +14,10 @@ class Config:
         self.io = io
         self.version= '0.1b'
         self.__configured = False
+
+        # il file di configurazione va settato nascosto,
+        # su win il file deve esistere per cui viene reso nascosto
+        # al momento della creazione in write_config
         if os.name == "posix":
             self.config_file = os.path.join(os.environ['HOME'], ".illuminator")
         elif os.name == "nt":
@@ -28,9 +32,6 @@ class Config:
         else:
             self.io.finestra.leggiConfig()
             return False
-        #cw = ConfigWindow(self)
-        #cw.run()
-        #self.read_config()
 
     def write_config(self, vals):
         d = self.default.copy()
@@ -41,6 +42,9 @@ class Config:
             cp.set('luce', k, v)
         with open(self.config_file, 'wt+') as fh:
             try:
+                if os.name == 'nt':
+                    import win32api, win32con
+                    win32api.SetFileAttributes(self.config_file, win32con.FILE_ATTRIBUTE_HIDDEN)
                 cp.write(fh)
             except:
                 log.exception('Scrivendo %s' %self.config_file)
