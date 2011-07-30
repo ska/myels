@@ -1,4 +1,7 @@
 from Tkinter import *
+import logging
+
+log = logging.getLogger('window')
 
 class Window():
     def __init__(self, io):
@@ -88,18 +91,18 @@ class Window():
         
         ip_Label = Label (self.__wR0C0, text='Indirizzo Ip')
         ip_Label.pack(side= LEFT)
-        ip_Text = Entry(self.__wR0C1, width=10)
-        ip_Text.pack()
+        self.ip_Text = Entry(self.__wR0C1, width=10)
+        self.ip_Text.pack()
         
         porta_Label = Label (self.__wR1C0, text='Porta')
         porta_Label.pack(side= LEFT)
-        porta_Text = Entry(self.__wR1C1, width=10)
-        porta_Text.pack()
+        self.porta_Text = Entry(self.__wR1C1, width=10)
+        self.porta_Text.pack()
         
         luce_Label = Label (self.__wR2C0, text='Indirizzo SCS')
         luce_Label.pack(side= LEFT)
-        luce_Text = Entry(self.__wR2C1, width=10)
-        luce_Text.pack()
+        self.luce_Text = Entry(self.__wR2C1, width=10)
+        self.luce_Text.pack()
         
         okb = Button(self.__wR3C1, text='Ok', command=self.configDestroy)
         okb.pack()
@@ -110,15 +113,56 @@ class Window():
         w.lift()
 
     def configDestroy(self):
-        d = {}
-        # TODO
-        # recupera i dati della configurazione inseriti
-        # se sono validi scrive la configurazione e distrugge il widget,
-        # altrimenti rimane impalato finche i dati sono giusti
-        self.io.config.write_config(d)
-        self.io.config.read_config()
-        self.ConfigWindow.destroy()
-        self.aggiornaStato()
+        """
+        recupera i dati della configurazione inseriti
+        se sono validi scrive la configurazione e distrugge il widget,
+        altrimenti rimane impalato finche i dati sono giusti
+        """
+        error = False
+        host = self.ip_Text.get()
+        porta = self.porta_Text.get()
+        luce = self.luce_Text.get()
+
+        # validazione IP
+        try:
+            ip_fields = host.split('.')
+            assert len(ip_fields) == 4
+            for n in ip_fields:
+                assert int(n) >= 0
+                assert int(n) <= 255
+        except AssertionError:
+            error = True
+            log.exception('validando IP')
+
+        # validazione porta
+        try:
+            int(porta)
+        except ValueError:
+            error = True
+            log.exception('validando la porta')
+
+        # validazione punto luce
+        try:
+            if luce.startswith('#'):
+                int(luce[1:])
+            else:
+                int(luce)
+        except ValueError:
+            error = True
+            log.exception('validando il punto luce')
+
+        if error:
+            # Error
+            print 'error'
+        else:
+            d = {'APl':luce,
+                 'Ip':host,
+                 'Porta':porta}
+
+            self.io.config.write_config(d)
+            self.io.config.read_config()
+            self.ConfigWindow.destroy()
+            self.aggiornaStato()
 
     def aggiornaStato(self):
         st = self.io.rete.leggi_stato()
