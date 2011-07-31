@@ -1,5 +1,6 @@
 #!/usr/bin/python
 
+import sys
 import logging
 from config import *
 from rete import *
@@ -25,6 +26,9 @@ def main():
     io.run()
 
 if __name__ == '__main__':
-    logging.basicConfig(level=logging.DEBUG)
+    if '-d' in sys.argv:
+        logging.basicConfig(level=logging.DEBUG)
+    else:
+        logging.basicConfig(level=logging.WARNING)
     main()
 
