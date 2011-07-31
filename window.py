@@ -247,7 +247,7 @@ class Window():
             if self.io.config.check_config():
                 #self.aggiornaStato()
                 self.__f.after(100, self.aggiornaStato)
-                self.__f.protocol("WM_TAKE_FOCUS", self.windowReady)
+                #self.__f.protocol("WM_TAKE_FOCUS", self.windowReady)
         #    self._configured = True
 
     def run(self):
