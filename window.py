@@ -12,16 +12,23 @@ class Window():
         self._luceAccesa = False
         #self._configured = False
         self.__f = Tk()
+        self.screenW = self.__f.winfo_screenwidth()
+        self.screenH = self.__f.winfo_screenheight()
+        windW = 300
+        windH = 100
+        posX = (self.screenW - windW)/2
+        posY = (self.screenH - windH)/2
+        
         self.__f.title("Illuminator " + self.io.config.version)
         self.__f.resizable(FALSE, FALSE)
-        self.__f.geometry("%dx%d+%d+%d" % (300, 110,0,0)) 
+        self.__f.geometry("%dx%d+%d+%d" % (windW, windH, posX, posY)) 
         #self.__f.wm_iconbitmap(bitmap="@icon2.bmp") 
         self.__f.wm_iconbitmap(bitmap="@icon.xbm") 
          
-        self.__ButtonAction = Button(self.__f, text="Azione", width="100", height="100" )
+        self.__ButtonAction = Button(self.__f, text="Connessione in corso..", width="100", height="100" )
         self.__ButtonAction.pack()
         self.__ButtonAction['command'] = self.ButtonClickAction          
-        
+        self.__f.bind("<Return>", self.shortCutRoot)
         # Barra dei menu
         self.__menuBar = Menu(self.__f)
         # Barra dei menu file
@@ -37,8 +44,13 @@ class Window():
         self.__f.config(menu=self.__menuBar)
                
     ## Finestra di info        
-    def HelpAbout(self):
-        self.AboutWindow = a = Toplevel(self.__f, height="175", width="450")
+    def HelpAbout(self):  
+        self.AboutWindow = a = Toplevel(self.__f)
+        windW = 270
+        windH = 320
+        posX = (self.screenW - windW)/2
+        posY = (self.screenH - windH)/2
+        a.geometry("%dx%d+%d+%d" % (windW, windH, posX, posY)) 
         a.title('Informazioni')        
         a.wm_iconbitmap(bitmap="@icon.xbm") 
         
@@ -65,23 +77,36 @@ class Window():
         
         self.__CloseAboutWindowButton = Button(self.__fR2, text='Chiudi', command=self.CloseAboutWindowButton_Click)
         self.__CloseAboutWindowButton.pack()
-        a.grab_set()  # questo rende la finestra "modale"
-        a.lift()
+        a.bind("<Escape>", self.shortCutAbout)
+        self.__f.iconify()
+        
+    
+    def shortCutAbout(self, event):
+        if event.keysym == "Escape":
+            self.CloseAboutWindowButton_Click()    
+        
         
     def CloseAboutWindowButton_Click(self):
         self.AboutWindow.destroy()
-
+        self.__f.deiconify()
+        
     def leggiConfig(self):
         self.ConfigWindow = w = Toplevel(self.__f)
+        windW = 250
+        windH = 100
+        posX = (self.screenW - windW)/2
+        posY = (self.screenH - windH)/2
+        w.geometry("%dx%d+%d+%d" % (windW, windH, posX, posY))
         
-        self.__wR0C0 = Frame(w, width="200", height="50")   
-        self.__wR0C1 = Frame(w, width="200", height="50")
-        self.__wR1C0 = Frame(w, width="200", height="50")   
-        self.__wR1C1 = Frame(w, width="200", height="50")
-        self.__wR2C0 = Frame(w, width="200", height="50")   
-        self.__wR2C1 = Frame(w, width="200", height="50")
-        self.__wR3C0 = Frame(w, width="200", height="50")   
-        self.__wR3C1 = Frame(w, width="200", height="50")
+        
+        self.__wR0C0 = Frame(w, width="250", height="70")   
+        self.__wR0C1 = Frame(w, width="250", height="70")
+        self.__wR1C0 = Frame(w, width="250", height="70")   
+        self.__wR1C1 = Frame(w, width="250", height="70")
+        self.__wR2C0 = Frame(w, width="250", height="70")   
+        self.__wR2C1 = Frame(w, width="250", height="70")
+        self.__wR3C0 = Frame(w, width="250", height="70")   
+        self.__wR3C1 = Frame(w, width="250", height="70")
         
         self.__wR0C0.grid(row=0, column=0)
         self.__wR0C1.grid(row=0, column=1)
@@ -95,17 +120,17 @@ class Window():
         
         ip_Label = Label (self.__wR0C0, text='Indirizzo Ip')
         ip_Label.pack(side= LEFT)
-        self.ip_Text = Entry(self.__wR0C1, width=10)
+        self.ip_Text = Entry(self.__wR0C1, width=15)
         self.ip_Text.pack()
         
         porta_Label = Label (self.__wR1C0, text='Porta')
         porta_Label.pack(side= LEFT)
-        self.porta_Text = Entry(self.__wR1C1, width=10)
+        self.porta_Text = Entry(self.__wR1C1, width=15)
         self.porta_Text.pack()
         
         luce_Label = Label (self.__wR2C0, text='Indirizzo SCS')
         luce_Label.pack(side= LEFT)
-        self.luce_Text = Entry(self.__wR2C1, width=10)
+        self.luce_Text = Entry(self.__wR2C1, width=15)
         self.luce_Text.pack()
         
         okb = Button(self.__wR3C0, text='Cancella', command=self.__f.destroy)
@@ -114,10 +139,19 @@ class Window():
         okb = Button(self.__wR3C1, text='Ok', command=self.configDestroy)
         okb.pack()
         
-        w.protocol("WM_DELETE_WINDOW", self.configDestroy)
+        w.bind("<Return>", self.shortCut)
+        w.bind("<Escape>", self.shortCut)
+        
+        w.protocol("WM_DELETE_WINDOW", self.__f.destroy)
         w.title('Configurazione')
-        w.grab_set()
-        w.lift()
+        self.__f.withdraw()
+        
+    def shortCut(self, event):
+        if event.keysym == "Return":
+            self.configDestroy()
+        elif event.keysym == "Escape":
+            self.__f.destroy()
+        
 
     def configDestroy(self):
         """
@@ -173,11 +207,12 @@ class Window():
             self.io.config.read_config()
             self.ConfigWindow.destroy()
             self.aggiornaStato()
-
+            self.__f.deiconify()
     def aggiornaStato(self):
         try:
             st = self.io.rete.leggi_stato()
         except rete.Error, e:
+            self.__ButtonAction['text'] =  str(e)
             tkMessageBox.showerror('Errore', str(e))
             return
         #if not self._luceAccesa:
@@ -188,7 +223,11 @@ class Window():
             self.__ButtonAction['text'] = 'Accendi'
             self._luceAccesa = False
 
-# Metodi Ascoltatori Pulsanti e slider   
+# Metodi Ascoltatori Pulsanti e slider
+    def shortCutRoot(self, event):
+        if event.keysym == "Return":
+            self.ButtonClickAction()
+            
     def ButtonClickAction(self):
         try:
             if self._luceAccesa:
@@ -196,6 +235,7 @@ class Window():
             else:
                 self.io.rete.accendi()
         except rete.Error, e:
+            self.__ButtonAction['text'] =  str(e)
             tkMessageBox.showerror('Errore', str(e))
             return           
         self.aggiornaStato()
@@ -207,6 +247,7 @@ class Window():
             if self.io.config.check_config():
                 #self.aggiornaStato()
                 self.__f.after(100, self.aggiornaStato)
+                self.__f.protocol("WM_TAKE_FOCUS", self.windowReady)
         #    self._configured = True
 
     def run(self):
