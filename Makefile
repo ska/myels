@@ -10,7 +10,7 @@ PYINST_FILE=$(PYINST_DIR).tar.bz2
 
 .PHONY: all config
 all: build_pyinst
-
+develop: build_pyinst_dev
 
 #$(CONFIG):
 #	#echo Genero file di configurazione..;
@@ -45,8 +45,11 @@ pyinstaller: $(PYINST_DIR)
 $(NAME).spec: pyinstaller
 	#python $(PYINST_DIR)/Makespec.py --onefile --tk --windowed --debug --name $(NAME) $(NAME).py
 
-build_pyinst: $(NAME).spec
+build_pyinst:
 	python $(PYINST_DIR)/Build.py $(NAME).spec
+
+build_pyinst_dev:
+	python $(PYINST_DIR)/Build.py $(NAME)_dev.spec
 
 #build_py2exe:
 #	python setup.py py2exe
