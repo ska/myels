@@ -181,8 +181,16 @@ class Rete:
         #data = data.split('*')
         # ['', '1', '0', '21##']
         #return int(data[2])
-        msg = self._recv_msg('std')
-        return int(msg.what)
+        msgs = []
+        while True:
+            msg = self._recv_msg(['std', 'ack'])
+            if msg.is_ack:
+                break
+            else:
+                msgs.append(msg)
+        #return int(msg.what)
+        val = min([int(msg.what) for msg in msgs])
+        return val
 
     @single_conn
     def aumenta_luce(self):
@@ -239,8 +247,13 @@ class Rete:
         buf = self._recv_msg_raw()
         msg = OpenMSG(buf)
         if typ:
-            giusto = getattr(msg, 'is_%s' %(typ,))
-            if not giusto:
+            if isinstance(typ, basestring):
+                typ = [typ]
+            for t in typ:
+                giusto = getattr(msg, 'is_%s' %(t,))
+                if giusto:
+                    break
+            else:
                 log.error('Atteso %s, ricevuto %s' %(typ, msg))
         return msg
 
