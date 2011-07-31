@@ -2,13 +2,15 @@ from Tkinter import *
 import tkMessageBox
 import logging
 
+import rete
+
 log = logging.getLogger('window')
 
 class Window():
     def __init__(self, io):
         self.io = io
         self._luceAccesa = False
-        self._configured = False
+        #self._configured = False
         self.__f = Tk()
         self.__f.title("Illuminator " + self.io.config.version)
         self.__f.resizable(FALSE, FALSE)
@@ -173,7 +175,11 @@ class Window():
             self.aggiornaStato()
 
     def aggiornaStato(self):
-        st = self.io.rete.leggi_stato()
+        try:
+            st = self.io.rete.leggi_stato()
+        except rete.Error, e:
+            tkMessageBox.showerror('Errore', str(e))
+            return
         #if not self._luceAccesa:
         if st > 0:
             self.__ButtonAction['text'] = 'Spegni'
@@ -184,22 +190,28 @@ class Window():
 
 # Metodi Ascoltatori Pulsanti e slider   
     def ButtonClickAction(self):
-        if self._luceAccesa:
-            self.io.rete.spegni()
-        else:
-            self.io.rete.accendi()
+        try:
+            if self._luceAccesa:
+                self.io.rete.spegni()
+            else:
+                self.io.rete.accendi()
+        except rete.Error, e:
+            tkMessageBox.showerror('Errore', str(e))
+            return           
         self.aggiornaStato()
 
-    def windowReady(self, event):
+    def windowReady(self):
         # solo la prima volta che la finestra viene configurata
         # controllo che abbia una configurazione valida
-        if not self._configured:
+        #if not self._configured:
             if self.io.config.check_config():
-                self.aggiornaStato()
-            self._configured = True
+                #self.aggiornaStato()
+                self.__f.after(100, self.aggiornaStato)
+        #    self._configured = True
 
     def run(self):
-        self.__f.bind('<Configure>', self.windowReady)
+        #self.__f.bind('<Configure>', self.windowReady)
+        self.__f.after_idle(self.windowReady)
         #self.__f.protocol("WM_TAKE_FOCUS", self.windowReady)
         self.__f.mainloop()
 

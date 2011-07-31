@@ -11,6 +11,18 @@ CMD_LESS = "*1*31*%s##" #APl
 
 log = logging.getLogger('rete')
 
+class Error(Exception):
+    pass
+
+class NetworkError(Error):
+    pass
+
+class OpenError(Error):
+    pass
+
+class UserError(Error):
+    pass
+
 class OpenMSG(object):
     def __init__(self, data=None):
         self.is_ack = False
@@ -160,10 +172,15 @@ class Rete:
                 self._connetti()
                 try:
                     return f(self, *args, **kwargs)
+                except Error:
+                    raise
                 except:
                     log.exception('In %s' %f.func_name)
-            except:
-                log.exception('Nella connessione')
+                    raise
+            except socket.error:
+                raise NetworkError('Errore di connessione.')
+            #except:
+            #    log.exception('Nella connessione')
             finally:
                 self._disconnetti()
         return wrapped_f
@@ -183,14 +200,21 @@ class Rete:
         #return int(data[2])
         msgs = []
         while True:
-            msg = self._recv_msg(['std', 'ack'])
+            msg = self._recv_msg(['std', 'ack', 'nack'])
             if msg.is_ack:
                 break
+            elif msg.is_nack:
+                log.error('nack in leggi stato')
+                raise OpenError('Errore di comunicazione')
             else:
                 msgs.append(msg)
         #return int(msg.what)
-        val = min([int(msg.what) for msg in msgs])
-        return val
+        vals = [int(msg.what) for msg in msgs]
+        if len(vals) > 0:
+            val = min(vals)
+            return val
+        else:
+            raise UserError('Punto luce non trovato')
 
     @single_conn
     def aumenta_luce(self):
@@ -206,13 +230,17 @@ class Rete:
 
     @single_conn
     def accendi(self):
-        cmd = CMD_ON % self.io.config.APl
+        cmd = OpenMSG.build_standard('1', '1', self.io.config.APl)
         self._invia(cmd)
+        #msg = self._recv_msg(['ack', 'nack'])
+        #cmd = CMD_ON % self.io.config.APl
+        #self._invia(cmd)
         self._leggi_ack()
 
     @single_conn
     def spegni(self):
-        cmd = CMD_OFF % self.io.config.APl
+        #cmd = CMD_OFF % self.io.config.APl
+        cmd = OpenMSG.build_standard('1', '0', self.io.config.APl)
         self._invia(cmd)
         self._leggi_ack()
 
@@ -272,10 +300,12 @@ class Rete:
         msg = self._recv_msg()
         if msg.is_nack:
             log.error('ricevuto NACK')
+            raise OpenError('Errore di comunicazione')
         elif msg.is_ack:
             log.debug('ricevuto ACK')
         else:
-            log.error('atteso ack/nack, trovato %s' %msg)
+            log.error('atteso ack/nack, trovato %s' %msg) 
+            raise OpenError('Errore di comunicazione')
 
     def _invia(self, data):
         try:
