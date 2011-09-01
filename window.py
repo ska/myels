@@ -56,11 +56,13 @@ class Window():
         
         self.__fR0 = Frame(a, width="450", height="125")   
         self.__fR1 = Frame(a, width="450", height="20")
-        self.__fR2 = Frame(a, width="450", height="30")
-        self.__fR0.grid(row=0, column=0)
-        self.__fR1.grid(row=1, column=0)
-        self.__fR2.grid(row=2, column=0)
-        
+        self.__fR2C0 = Frame(a, width="450", height="30")
+        self.__fR2C1 = Frame(a, width="450", height="30") 
+        self.__fR0.grid(row=0, column=0, columnspan=2)
+        self.__fR1.grid(row=1, column=0, columnspan=2)
+        self.__fR2C0.grid(row=2, column=0)
+        self.__fR2C1.grid(row=2, column=1)
+
         self.__photo = PhotoImage(file="logo.gif", width=150, height=125)
         self.__logo = Label(self.__fR0, image=self.__photo)
         self.__logo.photo = self.__photo
@@ -74,17 +76,45 @@ class Window():
         self.__autore1.pack()
         self.__autore2 = Label(self.__fR1, font=("Helvetica", 10), text='Luigi Scagnet <luigi.scagnet@gmail.com>')
         self.__autore2.pack()
-        
-        self.__CloseAboutWindowButton = Button(self.__fR2, text='Chiudi', command=self.CloseAboutWindowButton_Click)
+         
+        self.__CloseAboutWindowButton = Button(self.__fR2C0, text='Chiudi', command=self.CloseAboutWindowButton_Click)
+        self.__CloseAboutWindowButton.pack() 
+        self.__CloseAboutWindowButton = Button(self.__fR2C1, text='Licenza', command=self.LicenWind)
         self.__CloseAboutWindowButton.pack()
+
         a.bind("<Escape>", self.shortCutAbout)
         self.__f.iconify()
         
-    
+    def LicenWind(self):  
+        self.LicenWind = l = Toplevel(self.__f)
+
+        with open('LICENSE', 'r') as fh:
+            text = ""
+            for i in range(0,7):
+                text = text +  fh.readline()
+        windW = 400
+        windH = 180
+        posX = (self.screenW - windW)/2
+        posY = (self.screenH - windH)/2
+        l.geometry("%dx%d+%d+%d" % (windW, windH, posX, posY)) 
+        l.title('Licenza')        
+        l.wm_iconbitmap(bitmap="@icon.xbm") 
+        
+        self.__fR0 = Frame(l, width="450", height="125")   
+        self.__fR1 = Frame(l, width="450", height="30")
+        self.__fR0.grid(row=0, column=0)
+        self.__fR1.grid(row=1, column=0)
+
+        self.__text = Label(self.__fR0, font=("Helvetica", 10), text= text)
+        self.__text.pack()
+         
+        self.__CloseButton = Button(self.__fR1, text='Chiudi', command= self.LicenWind.destroy)
+        self.__CloseButton.pack() 
+
+ 
     def shortCutAbout(self, event):
         if event.keysym == "Escape":
             self.CloseAboutWindowButton_Click()    
-        
         
     def CloseAboutWindowButton_Click(self):
         self.AboutWindow.destroy()
@@ -97,7 +127,6 @@ class Window():
         posX = (self.screenW - windW)/2
         posY = (self.screenH - windH)/2
         w.geometry("%dx%d+%d+%d" % (windW, windH, posX, posY))
-        
         
         self.__wR0C0 = Frame(w, width="250", height="70")   
         self.__wR0C1 = Frame(w, width="250", height="70")
@@ -116,7 +145,6 @@ class Window():
         self.__wR2C1.grid(row=2, column=1)
         self.__wR3C0.grid(row=3, column=0)
         self.__wR3C1.grid(row=3, column=1)
-        
         
         ip_Label = Label (self.__wR0C0, text='Indirizzo Ip')
         ip_Label.pack(side= LEFT)
