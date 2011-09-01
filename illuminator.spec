@@ -6,7 +6,8 @@ pyz = PYZ(a.pure)
 
 # aggiungere i file dati
 a.datas += [('icon.xbm', 'icon.xbm', 'DATA'),
-	    ('logo.gif', 'logo.gif', 'DATA')]
+	    ('logo.gif', 'logo.gif', 'DATA'),
+	    ('LICENSE', 'LICENSE', 'DATA')]
 
 exe = EXE(TkPKG(), pyz,
           a.scripts,
